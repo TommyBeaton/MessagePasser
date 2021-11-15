@@ -26,8 +26,13 @@ namespace MessagePasser
             ServiceCollection = ServiceBootstrapper.BuildUp();
         }
 
+        ///<summary>
+        ///</summary>
         public void Subscribe<T>(T subscriber)
         {
+            if(subscriber == null)
+                throw new NullReferenceException();
+
             var interests = subscriber.GetType().GetInterfaces()
                 .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IMessageHandler<>))
                 .SelectMany(i => i.GetGenericArguments())
