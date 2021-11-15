@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace MessagePasser
 {
-    public interface IMessageHandler<T>
+    public class SubscriberModel
     {
-        public Task HandleMessage(T message, CancellationToken token);
+        public object SubscribedObject { get; set; }
+        public List<Type> Interests { get; set; }
     }
 }

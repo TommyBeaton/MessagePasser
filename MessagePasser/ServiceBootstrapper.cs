@@ -9,12 +9,17 @@ namespace MessagePasser
 {
     public static class ServiceBootstrapper
     {
-        public static IServiceCollection BuildUp()
+
+        public static IServiceProvider GetServiceProvider()
         {
             IServiceCollection serviceCollection = new ServiceCollection();
 
+            serviceCollection.AddSingleton<ISubscriberManager, SubscriberManager>();
+            serviceCollection.AddSingleton<IMessageManager , MessageManager>();
 
-            return serviceCollection;
+            //serviceCollection.AddSingleton<ISubscriberManager, SubscriberManager>
+
+            return serviceCollection.BuildServiceProvider();
         }
     }
 }

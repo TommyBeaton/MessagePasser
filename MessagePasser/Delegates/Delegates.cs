@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MessagePasser
+namespace MessagePasser.Delegates
 {
-    public interface IMessageHandler<T>
+    public  class Delegates
     {
-        public Task HandleMessage(T message, CancellationToken token);
+        public delegate void OnMessageSent(int subscriberCount);
     }
 }

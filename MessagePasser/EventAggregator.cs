@@ -1,80 +1,48 @@
-﻿using MessagePasser.Interfaces;
+﻿using MessagePasser;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections;
+using static MessagePasser.Delegates.Delegates;
 
 namespace MessagePasser
 {
     public class EventAggregator
     {
-        class Subscriber
-        {
-            public object SubscribedObject { get; set; }
-            public List<Type> Interests { get; set; }
-        }
         
-        public static IServiceCollection ServiceCollection;
-
-        private List<Subscriber> _subscribers = new List<Subscriber>();
+        private static IServiceProvider _serviceProvider;
+        private ISubscriberManager _subscriberManager;
+        private IMessageManager _messageManager;
 
         public EventAggregator()
         {
             SetUpServiceCollection();
+            _subscriberManager = _serviceProvider.GetService<ISubscriberManager>();
+            _messageManager = _serviceProvider.GetService<IMessageManager>();
         }
 
         public void SetUpServiceCollection()
         {
-            ServiceCollection = ServiceBootstrapper.BuildUp();
+            _serviceProvider = ServiceBootstrapper.GetServiceProvider();
         }
 
-        ///<summary>
-        ///</summary>
-        public void Subscribe<T>(T subscriber)
+        public bool SubscribeOnMainThread<T>(T subscriber)
         {
-            if(subscriber == null)
-                throw new NullReferenceException();
-
-            var interests = subscriber.GetType().GetInterfaces()
-                .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IMessageHandler<>))
-                .SelectMany(i => i.GetGenericArguments())
-                .ToList();
-
-            if(interests.Count > 0)
-            {
-                _subscribers.Add(new Subscriber
-                {
-                    Interests = interests,
-                    SubscribedObject = subscriber
-                });
-            }
-
-            foreach(var interest in interests)
-            {
-                Console.WriteLine("Aggregator added new class: " + interest.Name);
-            }
+            return _subscriberManager.SubscribeOnMainThread(subscriber);
         }
 
-        private void SendMessageOnObject<T>(T message, ref object subscriber)
+        public bool SubscribeOnBackgroundThread<T>(T subscriber)
         {
-            IMessageHandler<T> blah = (IMessageHandler<T>)subscriber;
-            blah.HandleMessage(message);
+            return _subscriberManager.SubscribeOnBackgroundThread(subscriber);
         }
 
-        public void SendMessage<T>(T message)
+        /// <summary>
+        /// Send a message using a specific type. This will call handle message on all classes that have subscribed with this type.
+        /// </summary>
+        /// <typeparam name="T">The type of message you want to subscribe to</typeparam>
+        /// <param name="message">The contents of your message that you want to publish</param>
+        /// <param name="callback">Callback if you want insight into the message being sent. Null by default.</param>
+        public void SendMessage<T>(T message, OnMessageSent callback = null)
         {
-            Console.WriteLine("Sending new message");
             
-            for(int i = 0; i < _subscribers.Count; i++)
-            {
-                foreach (var interest in _subscribers[i].Interests)
-                {
-                    if (interest == message.GetType())
-                    {
-                        Console.WriteLine("Found a subscriber, sending message!");
-                        object subscriber = _subscribers[i].SubscribedObject;
-                        SendMessageOnObject(message, ref subscriber);
-                    }
-                }
-            }
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MessagePasser;
-using MessagePasser.Interfaces;
+using MessagePasser;
 
 namespace DemoHandler
 {
@@ -15,13 +15,15 @@ namespace DemoHandler
         public Handler(EventAggregator aggregator)
         {
             _aggregator = aggregator;
-            _aggregator.Subscribe(this);
+            _aggregator.SubscribeOnMainThread(this);
         }
 
-        public void HandleMessage(string message)
+        public Task HandleMessage(string message, CancellationToken token)
         {
             Console.WriteLine("Handling message: " + message);
-            Console.WriteLine("Blah blah blah");
+            
+
+            return Task.CompletedTask;
         }
 
         public void SendMessage(string message)
