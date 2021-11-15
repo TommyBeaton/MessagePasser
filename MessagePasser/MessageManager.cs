@@ -18,6 +18,9 @@ namespace MessagePasser
 
         private void SendMessage<T>(T message, CancellationToken token, List<SubscriberModel> subscriberList, OnMessageSent callback = null)
         {
+            if(message == null)
+                throw new NullReferenceException();
+
             int subscriberCount = 0;
 
             for (int i = 0; i < subscriberList.Count; i++)
@@ -42,7 +45,7 @@ namespace MessagePasser
 
         public void SendMessageOnBackgroundThread<T>(T message, CancellationToken token, OnMessageSent callback = null)
         {
-            SendMessage(message, CancellationToken.None, _subscriberManager.BackgroundThreadSubscribers, callback);
+            Task.Run(() => SendMessage(message, CancellationToken.None, _subscriberManager.BackgroundThreadSubscribers, callback));
         }
 
         public void SendMessageOnMainThread<T>(T message, CancellationToken token, OnMessageSent callback = null)

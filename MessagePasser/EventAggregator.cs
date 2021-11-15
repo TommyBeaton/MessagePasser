@@ -40,9 +40,14 @@ namespace MessagePasser
         /// <typeparam name="T">The type of message you want to subscribe to</typeparam>
         /// <param name="message">The contents of your message that you want to publish</param>
         /// <param name="callback">Callback if you want insight into the message being sent. Null by default.</param>
-        public void SendMessage<T>(T message, OnMessageSent callback = null)
+        public void SendMessageOnBackgroundThread<T>(T message, CancellationToken token, OnMessageSent callback = null)
         {
-            
+            _messageManager.SendMessageOnBackgroundThread(message, token, callback);
+        }
+
+        public void SendMessageOnMainThread<T>(T message, CancellationToken token, OnMessageSent callback = null)
+        {
+            _messageManager.SendMessageOnMainThread(message, token, callback);
         }
     }
 }

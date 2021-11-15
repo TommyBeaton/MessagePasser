@@ -4,6 +4,10 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Version>0.8</Version>
+    <Company>Tommy Beaton</Company>
+    <Authors>Tommy Beaton</Authors>
+    <Description>A light-weight event aggregator for your applications</Description>
   </PropertyGroup>
 
   <ItemGroup>
